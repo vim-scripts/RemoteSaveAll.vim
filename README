@@ -1,0 +1,35 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=962
+
+(1)  This script (plugin) defines command :RWALL which saves all modified files in all running vim instances. Command takes no arguments. Bang can be used (:RWALL!) in which case the command which is sent to all running vims is :wall!. Without bang, the command which is sent to all running vims is :wall.
+
+Local vim is also saved.
+
+"All running vim instances" include only servername-enabled vims. Vim instances with servername disabled will not be saved. :RWALL/:WALL uses vim clientserver feature to execute ":wall[!]" command in other running vims.
+
+Synonym :WALL is set equivalent to :RWALL
+
+(2) To do this from shell (to signal all running vims to save their modified file)
+you can use either one of the following shell scripts:
+
+(2a) Shell script RWALL.sh -- requires that RemoteSaveAll.vim be installed
+
+#!/bin/sh
+# Description: save  modified files in all running vims
+# this script requires that plugin RemoteSaveAll.vim be installed
+# in the plugin directory
+vim -c 'RWALL' -c 'q!'
+
+(2b) Shell script savevims.sh -- does not require RemoteSaveAll.vim plugin
+
+#!/bin/sh
+# Description: save  modified files in all running vims
+for srv in `vim --serverlist`; do
+    vim --servername "$srv" --remote_send '<C-\><C-N>:wall<CR>'
+done
+
+(3) To check that your running vims are 'servername-enabled' and can be remotely saved, do:
+          vim --serverlist 
+at shell prompt, or
+          :echo serverlist()
+in vim. If nothing is printed, then no running vims are detected.
+
